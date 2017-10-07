@@ -1,5 +1,9 @@
 package labs.broker;
 
+import com.google.gson.Gson;
+import labs.common.MessageTransformer;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -21,9 +25,22 @@ public class Broker {
         System.out.println("I am waiting for clients...");
         while (true) {
             clientSocket = serverSocket.accept();
+            System.out.println("Hello form client port " + clientSocket.getPort());
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            System.out.println("Hello client");
+            String input = in.readLine();
+
+//            JSONObject jObject = new JSONObject(input);
+//            String currentLocation = jObject.getString("id");
+//            System.out.println(currentLocation);
+
+            while (in.readLine() != null) {
+                input = in.readLine();
+                System.out.println(in.toString());
+                MessageTransformer messageTransformer = new MessageTransformer();
+                System.out.println(messageTransformer.transformFromGson(input).toString());
+
+            }
         }
     }
 
