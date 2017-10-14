@@ -17,8 +17,8 @@ public class Sender {
 
     public void sendMessage(Message message) throws Exception {
         MessageTransformer messageTransformer = new MessageTransformer();
-        messageTransformer.transformIntoGson(message);
-        out.println(messageTransformer);
+        final String json = messageTransformer.transformIntoGson(message);
+        out.println(json);
     }
 
     public void stopConnection() throws Exception {

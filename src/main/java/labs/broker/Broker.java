@@ -1,8 +1,8 @@
 package labs.broker;
 
-import com.google.gson.Gson;
+import labs.common.Message;
+import labs.common.MessageOrder;
 import labs.common.MessageTransformer;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,10 +17,10 @@ public class Broker {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private Queue<String> queue;
+    private Queue<Message> queue;
 
     public void start(int port) throws Exception {
-        queue = new ConcurrentLinkedQueue<String>();
+        queue = new ConcurrentLinkedQueue<Message>();
         serverSocket = new ServerSocket(port);
         System.out.println("I am waiting for clients...");
         while (true) {
@@ -28,18 +28,17 @@ public class Broker {
             System.out.println("Hello form client port " + clientSocket.getPort());
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String input = in.readLine();
+            String input;
 
-//            JSONObject jObject = new JSONObject(input);
-//            String currentLocation = jObject.getString("id");
-//            System.out.println(currentLocation);
-
-            while (in.readLine() != null) {
-                input = in.readLine();
-                System.out.println(in.toString());
+            while ((input = in.readLine()) != null) {
                 MessageTransformer messageTransformer = new MessageTransformer();
-                System.out.println(messageTransformer.transformFromGson(input).toString());
-
+                Message message = messageTransformer.transformFromGson(input);
+                if (message.getOrder() == MessageOrder.SEND) {
+                    queue.add(message);
+                } else{
+                    queue.poll();
+                }
+                System.out.println(queue);
             }
         }
     }

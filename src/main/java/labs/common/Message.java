@@ -1,7 +1,6 @@
 package labs.common;
 
 import java.util.Date;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Message {
@@ -9,14 +8,13 @@ public class Message {
     private int id;
     private String text;
     private Date createdAt;
-    private MessageLocation currentLocation;
+    private MessageOrder order;
 
-    public Message(MessageLocation currentLocation) {
+    public Message(String text, MessageOrder order) {
         this.id = count.incrementAndGet();
-        Scanner scanner = new Scanner(System.in);
-        this.text =  scanner.next();
+        this.text =  text;
         this.createdAt = new Date();
-        this.currentLocation = currentLocation;
+        this.order = order;
     }
 
     public int getId() {
@@ -39,12 +37,12 @@ public class Message {
         this.createdAt = new Date();
     }
 
-    public MessageLocation getCurrentLocation() {
-        return currentLocation;
+    public MessageOrder getOrder() {
+        return order;
     }
 
-    public void setCurrentLocation(MessageLocation currentLocation) {
-        this.currentLocation = currentLocation;
+    public void setOrder(MessageOrder order) {
+        this.order = order;
     }
 
     @Override
@@ -53,7 +51,7 @@ public class Message {
                 "id=" + id +
                 ", text='" + text + '\'' +
                 ", createdAt=" + createdAt +
-                ", currentLocation=" + currentLocation +
+                ", order=" + order +
                 '}';
     }
 }
