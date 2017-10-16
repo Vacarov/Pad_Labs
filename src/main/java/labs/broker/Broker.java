@@ -12,41 +12,50 @@ import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Broker {
+public class Broker extends Thread {
     private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
-    private Queue<Message> queue;
 
-    public void start(int port) throws Exception {
-        queue = new ConcurrentLinkedQueue<Message>();
-        serverSocket = new ServerSocket(port);
-        System.out.println("I am waiting for clients...");
-        while (true) {
-            clientSocket = serverSocket.accept();
-            System.out.println("Hello form client port " + clientSocket.getPort());
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String input;
-
-            while ((input = in.readLine()) != null) {
-                MessageTransformer messageTransformer = new MessageTransformer();
-                Message message = messageTransformer.transformFromGson(input);
-                if (message.getOrder() == MessageOrder.SEND) {
-                    queue.add(message);
-                } else{
-                    queue.poll();
-                }
-                System.out.println(queue);
-            }
+    public Broker(int port) {
+        try {
+            this.serverSocket = new ServerSocket(port);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void stop() throws Exception {
-        in.close();
-        out.close();
-        clientSocket.close();
-        serverSocket.close();
+    @Override
+    public void start() {
+        final Queue<Message> queue = new ConcurrentLinkedQueue<Message>();
+
+        System.out.println("I am waiting for clients...");
+        try {
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Hello client with port " + clientSocket.getPort());
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                String input;
+
+                while ((input = in.readLine()) != null) {
+                    MessageTransformer messageTransformer = new MessageTransformer();
+                    Message message = messageTransformer.transformFromGson(input);
+                    if (message.getOrder() == MessageOrder.SEND) {
+                        queue.add(message);
+                    } else {
+                        if (queue.isEmpty()) {
+                            System.out.println("No more messages in queue");
+                            break;
+                        } else {
+                            message = queue.poll();
+                            final String json = messageTransformer.transformIntoGson(message);
+                            out.println(json);
+                        }
+                    }
+                    System.out.println(queue);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
