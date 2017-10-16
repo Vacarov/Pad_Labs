@@ -25,9 +25,9 @@ public class Broker extends Thread {
 
     @Override
     public void start() {
-        Queue<Message> queue = new ConcurrentLinkedQueue<Message>();
-        System.out.println("I am waiting for clients...");
+        final Queue<Message> queue = new ConcurrentLinkedQueue<Message>();
 
+        System.out.println("I am waiting for clients...");
         try {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
@@ -42,9 +42,14 @@ public class Broker extends Thread {
                     if (message.getOrder() == MessageOrder.SEND) {
                         queue.add(message);
                     } else {
-                        message = queue.poll();
-                        final String json = messageTransformer.transformIntoGson(message);
-                        out.println(json);
+                        if (queue.isEmpty()) {
+                            System.out.println("No more messages in queue");
+                            break;
+                        } else {
+                            message = queue.poll();
+                            final String json = messageTransformer.transformIntoGson(message);
+                            out.println(json);
+                        }
                     }
                     System.out.println(queue);
                 }

@@ -28,12 +28,10 @@ public class Receiver extends Thread {
 
     public void receiveAndShowMessage() throws Exception {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String input;
-        while ((input = in.readLine()) != null) {
-            MessageTransformer messageTransformer = new MessageTransformer();
-            Message message = messageTransformer.transformFromGson(input);
-            System.out.println(message);
-        }
+        String input = in.readLine();
+        MessageTransformer messageTransformer = new MessageTransformer();
+        Message message = messageTransformer.transformFromGson(input);
+        System.out.println(message.toString());
     }
 
     public void stopConnection() throws Exception {
