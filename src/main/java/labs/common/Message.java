@@ -10,10 +10,20 @@ public class Message {
     private Date createdAt;
     private MessageOrder order;
 
+    public Message() {
+    }
+
     public Message(String text, MessageOrder order) {
         this.id = count.incrementAndGet();
         this.text =  text;
         this.createdAt = new Date();
+        this.order = order;
+    }
+
+    public Message(int id, String text, Date createdAt, MessageOrder order) {
+        this.id = id;
+        this.text = text;
+        this.createdAt = createdAt;
         this.order = order;
     }
 
@@ -52,6 +62,6 @@ public class Message {
                 ", text='" + text + '\'' +
                 ", createdAt=" + createdAt +
                 ", order=" + order +
-                '}';
+                "}";
     }
 }
