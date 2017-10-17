@@ -1,10 +1,7 @@
 package labs;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import labs.common.Message;
 import labs.common.MessageOrder;
-import labs.common.MessageTransformer;
 
 import java.io.FileWriter;
 import java.io.Writer;
@@ -25,14 +22,5 @@ public class MainForTraining {
 
         queue.add(message);
         queue.add(message2);
-
-
-        MessageTransformer messageTransformer = new MessageTransformer();
-        final String json1 = messageTransformer.transformIntoGson(message);
-        final String json2 = messageTransformer.transformIntoGson(message2);
-        writer.write(queue.element().toString());
-        writer.close();
-
-
     }
 }
