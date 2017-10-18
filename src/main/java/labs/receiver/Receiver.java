@@ -33,9 +33,4 @@ public class Receiver extends Thread {
         Message message = messageTransformer.transformFromGson(input);
         System.out.println(message.toString());
     }
-
-    public void stopConnection() throws Exception {
-        in.close();
-        clientSocket.close();
-    }
 }
