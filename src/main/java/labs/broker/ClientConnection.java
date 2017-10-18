@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ClientConnection extends Thread {
@@ -19,9 +18,8 @@ public class ClientConnection extends Thread {
     }
 
     public void start(ConcurrentLinkedQueue<Message> queue) {
-        System.out.println("Hello client with port " + clientSocket.getPort());
-
         try {
+            System.out.println("Hello client with port " + clientSocket.getPort());
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String input;

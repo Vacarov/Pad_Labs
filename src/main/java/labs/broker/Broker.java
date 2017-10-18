@@ -1,13 +1,9 @@
 package labs.broker;
 
 import labs.common.Message;
-import labs.common.MessageOrder;
-import labs.common.MessageTransformer;
 
-import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Broker extends Thread {
@@ -23,7 +19,7 @@ public class Broker extends Thread {
 
     @Override
     public void start() {
-        Queue<Message> queue = null;
+        ConcurrentLinkedQueue<Message> queue = null;
         QueueStorage queueStorage = new QueueStorage();
 
         if (!queueStorage.isEmptyQueue()) {
@@ -31,18 +27,15 @@ public class Broker extends Thread {
             System.out.println("Queue is restored:\n " + queue.toString());
         } else queue = new ConcurrentLinkedQueue<>();
 
-        queueStorage.storeQueueWhenApplicationStopped((ConcurrentLinkedQueue<Message>) queue);
+        queueStorage.storeQueueWhenApplicationStopped(queue);
         System.out.println("I am waiting for clients...");
         try {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-
-                ConcurrentLinkedQueue<Message> finalQueue = (ConcurrentLinkedQueue<Message>) queue;
+                final ConcurrentLinkedQueue<Message> finalQueue = queue;
                 new Thread(() -> {
-//                    ClientConnection clientConnection = new ClientConnection(clientSocket).start(finalQueue);
-                                    }).start();
-//                ClientConnection clientConnection = new ClientConnection(clientSocket);
-//                clientConnection.start((ConcurrentLinkedQueue<Message>) queue);
+                    new ClientConnection(clientSocket).start(finalQueue);
+                }).start();
             }
         } catch (Exception e) {
             e.printStackTrace();
